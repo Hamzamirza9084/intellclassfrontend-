@@ -1,17 +1,27 @@
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, useGLTF } from "@react-three/drei";
-import { useRef } from "react";
+import { useRef, useEffect, useState } from "react";
 import { Bloom, EffectComposer } from "@react-three/postprocessing";
 import "./Land.css";
 
 function Model({ modelPath }) {
   const { scene } = useGLTF(modelPath);
   const modelRef = useRef();
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   useFrame(() => {
     if (modelRef.current) {
       modelRef.current.rotation.y += 0.01;
-      modelRef.current.rotation.x = 1.05;
+      modelRef.current.rotation.x = 1.05 + scrollY * 0.005; 
     }
   });
 
